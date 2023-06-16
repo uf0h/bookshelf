@@ -27,20 +27,10 @@ jobs:
           MYSQL_ALLOW_EMPTY_PASSWORD: bookshelf
         ports:
           - 3306:3306
-        options: >-
-          --health-cmd "mysqladmin ping -ppass"
-          --health-interval 10s
-          --health-start-period 10s
-          --health-timeout 5s
-          --health-retries 10
+        options: --health-cmd="mysqladmin ping -ppass" --health-interval=10s --health-start-period=10s --health-timeout=5s --health-retries=10 -e MYSQL_ROOT_USER=root -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=bookshelf_test --entrypoint sh mysql:8 -c "exec docker-entrypoint.sh mysqld --default-authentication-plugin=mysql_native_password"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.5.3
-      # - name: Configure MySQL
-      #   run: |
-      #     mysql -e "ALTER USER 'root'@'localhost' \
-      #     IDENTIFIED WITH mysql_native_password BY 'root';" \
-      #     -uroot -ppassword
       - uses: actions/setup-node@v3
         with:
           node-version-file: 'package.json'
