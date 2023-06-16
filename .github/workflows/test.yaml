@@ -36,11 +36,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.5.3
-      - name: Configure MySQL
-        run: |
-          mysql -e "ALTER USER 'root'@'localhost' \
-          IDENTIFIED WITH mysql_native_password BY 'root';" \
-          -uroot -ppassword
+      # - name: Configure MySQL
+      #   run: |
+      #     mysql -e "ALTER USER 'root'@'localhost' \
+      #     IDENTIFIED WITH mysql_native_password BY 'root';" \
+      #     -uroot -ppassword
       - uses: actions/setup-node@v3
         with:
           node-version-file: 'package.json'
