@@ -20,19 +20,27 @@ jobs:
           --health-retries 5
       mysql:
         image: mysql:8
-        env:
-          MYSQL_ROOT_USER: root
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: bookshelf_test
-          MYSQL_ALLOW_EMPTY_PASSWORD: bookshelf
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping -ppass" --health-interval=10s --health-start-period=10s --health-timeout=5s --health-retries=10 -e MYSQL_ROOT_USER=root -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=bookshelf_test --entrypoint sh mysql:8 -c "exec docker-entrypoint.sh mysqld --default-authentication-plugin=mysql_native_password"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.5.3
+
       - uses: actions/setup-node@v3
         with:
-          node-version-file: 'package.json'
-      - run: npm ci
-      - run: npm test
+          node-version-file: '.nvmrc'
+
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3.3.1
+        with:
+          path: ./node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts
+
+      - name: 'Run tests'
+        run: npm test
